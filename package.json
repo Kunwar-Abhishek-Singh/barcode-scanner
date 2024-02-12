@@ -9,13 +9,12 @@
     "clean": "rimraf docs .parcel-cache",
     "generateSW": "workbox generateSW",
     "start": "parcel",
-    "predeploy":"npm run build",
-    "deploy":"gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "build:parcel": "parcel build --dist-dir=docs --public-url=./",
     "build": "npm-run-all clean build:parcel",
     "postbuild": "npm run generateSW"
   },
-  
   "keywords": [
     "aztec",
     "code_128",
@@ -32,13 +31,11 @@
     "upc_e",
     "scanner"
   ],
- 
-  
- 
   "devDependencies": {
     "@parcel/packager-raw-url": "~2.11.0",
     "@parcel/transformer-webmanifest": "~2.11.0",
     "eslint": "~8.56.0",
+    "gh-pages": "~6.1.1",
     "npm-run-all": "~4.1.5",
     "parcel": "~2.11.0",
     "process": "~0.11.10",
