@@ -10,26 +10,22 @@
     "generateSW": "workbox generateSW",
     "start": "parcel",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
+    "deploy": "gh-pages -d docs",
     "build:parcel": "parcel build --dist-dir=docs --public-url=./",
     "build": "npm-run-all clean build:parcel",
     "postbuild": "npm run generateSW"
   },
   "keywords": [
-    "aztec",
+   
     "code_128",
     "code_39",
     "code_93",
-    "codabar",
-    "data_matrix",
+    
+    
     "ean_13",
-    "ean_8",
-    "itf",
-    "pdf417",
-    "qr_code",
-    "upc_a",
-    "upc_e",
-    "scanner"
+    "ean_8"
+    
+    
   ],
   "devDependencies": {
     "@parcel/packager-raw-url": "~2.11.0",
