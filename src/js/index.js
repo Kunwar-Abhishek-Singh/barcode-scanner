@@ -4,10 +4,12 @@ import '@georapbox/files-dropzone-element/dist/files-dropzone-defined.js';
 import { isWebShareSupported } from '@georapbox/web-share-element/dist/is-web-share-supported.js';
 import '@georapbox/resize-observer-element/dist/resize-observer-defined.js';
 import { CapturePhoto } from '@georapbox/capture-photo-element/dist/capture-photo.js';
+
 import { getHistory, setHistory, getSettings, setSettings } from './services/storage.js';
 import { toastAlert } from './toast-alert.js';
 import { debounce } from './utils/debounce.js';
 import './custom-clipboard-copy.js';
+// import PiracyBarcode from './PiracyChecker.js';
 
 (async function () {
   const NO_BARCODE_DETECTED = 'No barcode detected';
@@ -19,7 +21,9 @@ import './custom-clipboard-copy.js';
   const fileResultsEl = document.getElementById('fileResults');
   const scanInstructionsEl = document.getElementById('scanInstructions');
   const scanBtn = document.getElementById('scanBtn');
+
   const dropzoneEl = document.getElementById('dropzone');
+
   const resizeObserverEl = document.querySelector('resize-observer');
   const scanFrameEl = document.getElementById('scanFrame');
   const globalActionsEl = document.getElementById('globalActions');
@@ -33,6 +37,27 @@ import './custom-clipboard-copy.js';
   const supportedFormatsEl = document.getElementById('supportedFormats');
   let shouldRepeatScan = true;
   let rafId;
+
+  let searchBarcode;
+
+  let BookData = [];
+  let dataa = [];
+            function fetchData() {
+              fetch("https://nodei.ssccglpinnacle.com/getship")
+                .then((response) => response.json())
+                .then((responseData) => {
+                  BookData.push(...responseData.reverse());
+                  console.log(data);
+                });
+          
+              fetch("https://nodei.ssccglpinnacle.com/getApproveDPO")
+                .then((response) => response.json())
+                .then((responseData) => {
+                  dataa.push(...responseData.reverse());
+                  console.log(dataa)
+                });
+            }
+              fetchData();
 
   if (!('BarcodeDetector' in window)) {
     try {
@@ -366,7 +391,12 @@ import './custom-clipboard-copy.js';
     return new Promise((resolve, reject) => {
       barcodeDetector.detect(source).then(results => {
         if (Array.isArray(results) && results.length > 0) {
-          resolve(results[0]);
+          console.log("Results: " , results);
+          var desiredFormats = ['ean_13', 'code_128', 'code_39', 'code_93', 'ean_8', 'upc_a', 'upc_e'];
+          var barcodeResult = results.find(function(obj) {
+            return desiredFormats.includes(obj.format);
+          });
+          resolve(barcodeResult);
         } else {
           reject({
             message: 'Could not detect barcode from provided source.'
@@ -377,6 +407,32 @@ import './custom-clipboard-copy.js';
       });
     });
   }
+
+  // function detectBarcode(source) {
+  //   return new Promise((resolve, reject) => {
+  //     barcodeDetector.detect(source).then(results => {
+  //       if (Array.isArray(results) && results.length > 0) {
+  //         for (let i = 0; i < results.length; i++) {
+  //           if (results[i].format === 'ean_13') {
+  //             console.log("Results: ", results);
+  //             alert(results[i].format);
+  //             resolve(results[i]);
+  //             return; // Exit the loop after resolving the barcode
+  //           }
+  //         }
+  //         // If no barcode with format ean_13 is found
+  //         reject({ message: 'No ean_13 barcode detected.' });
+  //       } else {
+  //         // If no results or empty results array
+  //         reject({ message: 'Could not detect barcode from provided source.' });
+  //       }
+  //     }).catch(err => {
+  //       // If an error occurs during barcode detection
+  //       reject(err);
+  //     });
+  //   });
+  // }
+  
 
   async function scan() {
     log('Scanning...');
@@ -395,6 +451,8 @@ import './custom-clipboard-copy.js';
       scanFrameEl.hidden = true;
       beep(200, 860, 0.03, 'square');
       vibrate();
+
+      searchBarcode = barcode.rawValue;
       return;
     } catch (err) {
       // Fail silently...
@@ -409,18 +467,86 @@ import './custom-clipboard-copy.js';
     if (!file) {
       return;
     }
-
+    
     const image = new Image();
     const reader = new FileReader();
 
     reader.onload = evt => {
       const data = evt.target.result;
-
+      
       image.onload = async () => {
         try {
           const barcode = await detectBarcode(image);
           emptyResults(fileResultsEl);
           createResult(barcode.rawValue, fileResultsEl);
+          // PiracyBarcode(barcode.rawValue);
+
+          let searchBarcode=barcode.rawValue;
+
+          function searchBarCode (){
+            console.log("function is running")
+            if (searchBarcode.trim() === "") {
+
+              alert("Please enter a barcode before submitting.");
+              return;
+            }
+        
+            let found = false;
+            let orderNum = null;
+            BookData.forEach((item) => {
+              if (item.barcodeData) {
+                console.log("ghus gaya hai")
+                item.barcodeData.forEach((barcode) => {
+                  if (barcode.scannedData && barcode.scannedData.includes(searchBarcode)) {
+                    found = true;
+                    orderNum = barcode.OrderNum;
+                    return;
+                  }
+                });
+              }
+            });
+        
+            foundBarcode = found
+              ? alert("verified")
+              : alert("This book does not belong to Pinnacle so this is a duplicate book.");
+        
+            submittedBarcode = searchBarcode;
+            searchBarcode = "";
+          }
+
+          searchBarCode();
+        
+            // if (found) {
+            //   postBarcodeToMongoDB();
+        
+            //   const matchingOrder = dataa.find((order) => order.shipmentid === orderNum);
+        
+            //   if (matchingOrder) {
+            //     displayedDorderid = matchingOrder.Dorderid;
+            //     console.log(`Dorderid: ${matchingOrder.Dorderid}`);
+            //   } else {
+            //     displayedDorderid = "";
+            //   }
+            // } else {
+            //   displayedDorderid = "";
+            // }
+        
+            // getCountFromAPI(searchBarcode);
+            // barcodeCount = null;
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
           addToHistory(barcode.rawValue);
           beep(200, 860, 0.03, 'square');
           vibrate();
@@ -463,6 +589,41 @@ import './custom-clipboard-copy.js';
     emptyResults(cameraResultsEl);
     cameraResultsEl.close();
     scan();
+
+    // let searchBarcode=barcode.rawValue;
+    
+    function searchBarCode (){
+      console.log("function is running")
+      if (searchBarcode.trim() === "") {
+
+        alert("Please enter a barcode before submitting.");
+        return;
+      }
+  
+      let found = false;
+      let orderNum = null;
+      BookData.forEach((item) => {
+        if (item.barcodeData) {
+          console.log("ghus gaya hai")
+          item.barcodeData.forEach((barcode) => {
+            if (barcode.scannedData && barcode.scannedData.includes(searchBarcode)) {
+              found = true;
+              orderNum = barcode.OrderNum;
+              return;
+            }
+          });
+        }
+      });
+  
+      foundBarcode = found
+        ? alert("verified")
+        : alert("This book does not belong to Pinnacle so this is a duplicate book.");
+  
+      submittedBarcode = searchBarcode;
+      searchBarcode = "";
+    }
+
+    searchBarCode();
   });
 
   tabGroupEl.addEventListener('a-tab-show', debounce(evt => {
@@ -480,6 +641,39 @@ import './custom-clipboard-copy.js';
         && !cameraResultsEl.querySelector('.results__item')
       ) {
         scan();
+
+        function searchBarCode (){
+          console.log("function is running")
+          if (searchBarcode.trim() === "") {
+    
+            alert("Please enter a barcode before submitting.");
+            return;
+          }
+      
+          let found = false;
+          let orderNum = null;
+          BookData.forEach((item) => {
+            if (item.barcodeData) {
+              console.log("ghus gaya hai")
+              item.barcodeData.forEach((barcode) => {
+                if (barcode.scannedData && barcode.scannedData.includes(searchBarcode)) {
+                  found = true;
+                  orderNum = barcode.OrderNum;
+                  return;
+                }
+              });
+            }
+          });
+      
+          foundBarcode = found
+            ? alert("verified")
+            : alert("This book does not belong to Pinnacle so this is a duplicate book.");
+      
+          submittedBarcode = searchBarcode;
+          searchBarcode = "";
+        }
+    
+        searchBarCode();
       }
 
       if (capturePhotoEl != null && typeof capturePhotoEl.startVideoStream === 'function') {
