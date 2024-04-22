@@ -47,4 +47,4 @@ $ npm run build
 
 ## License
 
-[The MIT License (MIT)](https://georapbox.mit-license.org/@2022)
+[The MIT License (MIT)](https://github.com/Kunwar-Abhishek-Singh/barcode-scanner/blob/main/LICENSE)
