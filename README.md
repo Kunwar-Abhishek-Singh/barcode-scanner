@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://georapbox.github.io/barcode-scanner/">
+  <a href="https://kunwar-abhishek-singh.github.io/barcode-scanner/">
     <img src="assets/logo.png" width="130" height="130" alt="Barcode Scanner">
   </a>
 </p>
@@ -10,7 +10,7 @@ A Progressive Web Application (PWA) that scans barcodes of various formats, usin
 
 > **NOTE**: The Barcode Detection API is part of the [Fugu](https://fugu-tracker.web.app/) project. Currently it is supported only on Chromium browsers in MacOS and Android. For non-supporting browsers, a [polyfill](https://github.com/gruhn/barcode-detector) is used.
 
-[Live demo](https://georapbox.github.io/barcode-scanner/)
+[Live demo](https://kunwar-abhishek-singh.github.io/barcode-scanner/)
 
 ## Features
 
